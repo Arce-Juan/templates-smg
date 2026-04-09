@@ -1,0 +1,77 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: credit-system-sqlserver
+    env_file:
+      - .env
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: credit-system-rabbitmq
+    environment:
+      # Usuario fijo para Management y para la API/Worker. Solo se crea si la base está vacía.
+      RABBITMQ_DEFAULT_USER: credit
+      RABBITMQ_DEFAULT_PASS: credit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./rabbitmq/definitions.json:/etc/rabbitmq/definitions.json
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: credit-system-api
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
+      RabbitMQ__Host: ${RabbitMQ__Host:-rabbitmq}
+      RabbitMQ__Port: ${RabbitMQ__Port:-5672}
+      RabbitMQ__VirtualHost: ${RabbitMQ__VirtualHost:-/}
+      RabbitMQ__Username: ${RabbitMQ__Username:-credit}
+      RabbitMQ__Password: ${RabbitMQ__Password:-credit}
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: credit-system-worker
+    env_file:
+      - .env
+    environment:
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
+      RabbitMQ__Host: ${RabbitMQ__Host:-rabbitmq}
+      RabbitMQ__Port: ${RabbitMQ__Port:-5672}
+      RabbitMQ__VirtualHost: ${RabbitMQ__VirtualHost:-/}
+      RabbitMQ__Username: ${RabbitMQ__Username:-credit}
+      RabbitMQ__Password: ${RabbitMQ__Password:-credit}
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  rabbitmq-data:

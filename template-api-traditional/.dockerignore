@@ -1,0 +1,17 @@
+**/bin
+**/obj
+**/.vs
+**/.git
+**/*.user
+**/node_modules
+.gitignore
+.env
+.env.*
+!.env.example
+*.md
+**/Logs
+**/logs
+**/TestResults
+**/*.trx
+**/.idea
+**/publish

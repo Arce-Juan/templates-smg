@@ -1,0 +1,19 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["CreditSystem.Worker/CreditSystem.Worker.csproj", "CreditSystem.Worker/"]
+COPY ["CreditSystem.Application/CreditSystem.Application.csproj", "CreditSystem.Application/"]
+COPY ["CreditSystem.Domain/CreditSystem.Domain.csproj", "CreditSystem.Domain/"]
+COPY ["CreditSystem.Infrastructure/CreditSystem.Infrastructure.csproj", "CreditSystem.Infrastructure/"]
+
+RUN dotnet restore "CreditSystem.Worker/CreditSystem.Worker.csproj"
+COPY . .
+RUN dotnet publish "CreditSystem.Worker/CreditSystem.Worker.csproj" -c Release -o /app/publish
+
+# Run stage
+FROM mcr.microsoft.com/dotnet/runtime:8.0 AS run
+WORKDIR /app
+
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "CreditSystem.Worker.dll"]

@@ -1,0 +1,21 @@
+# Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+COPY ["CreditSystem.Api/CreditSystem.Api.csproj", "CreditSystem.Api/"]
+COPY ["CreditSystem.Application/CreditSystem.Application.csproj", "CreditSystem.Application/"]
+COPY ["CreditSystem.Domain/CreditSystem.Domain.csproj", "CreditSystem.Domain/"]
+COPY ["CreditSystem.Infrastructure/CreditSystem.Infrastructure.csproj", "CreditSystem.Infrastructure/"]
+
+RUN dotnet restore "CreditSystem.Api/CreditSystem.Api.csproj"
+COPY . .
+RUN dotnet publish "CreditSystem.Api/CreditSystem.Api.csproj" -c Release -o /app/publish
+
+# Run stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS run
+WORKDIR /app
+EXPOSE 8080
+ENV ASPNETCORE_URLS=http://+:8080
+
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "CreditSystem.Api.dll"]

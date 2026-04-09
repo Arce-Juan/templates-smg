@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hibernate-mapping assembly="Template.Domain"
+                   namespace="Template.Domain.Entities"
+                   xmlns="urn:nhibernate-mapping-2.2">
+
+  <class name="TemplateEntity" table="Templates" lazy="true">
+    <!-- Primary Key -->
+    <id name="Id" column="Id" type="Guid">
+      <generator class="guid.comb" />
+    </id>
+
+    <!-- Properties -->
+    <property name="Name" 
+              column="Name" 
+              type="string" 
+              not-null="false" 
+              length="255" />
+
+    <property name="Description" 
+              column="Description" 
+              type="string" 
+              not-null="false" 
+              length="1000" />
+
+    <property name="CreatedAt" 
+              column="CreatedAt" 
+              type="DateTime" 
+              not-null="true" 
+              update="false" />
+
+    <property name="UpdatedAt" 
+              column="UpdatedAt" 
+              type="DateTime" 
+              not-null="false" />
+
+  </class>
+
+</hibernate-mapping>

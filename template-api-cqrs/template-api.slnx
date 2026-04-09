@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="CreditSystem.Api/TemplateSystem.Api.csproj" Id="33477652-8857-4b9d-b54d-63d8340ddef4" />
+    <Project Path="CreditSystem.Application/TemplateSystem.Application.csproj" Id="25dab9e8-5259-4c95-9514-e6c59551640f" />
+    <Project Path="CreditSystem.Domain/TemplateSystem.Domain.csproj" Id="ded93d70-d0c1-4f6b-b346-e7c24a4f797c" />
+    <Project Path="CreditSystem.Infrastructure/TemplateSystem.Infrastructure.csproj" Id="3613c3b4-637b-4784-950b-4d44e015b71d" />
+    <Project Path="CreditSystem.Worker/TemplateSystem.Worker.csproj" Id="7330ae2a-682c-40a5-8cab-6322b3ba2ef8" />
+  </Folder>
+</Solution>

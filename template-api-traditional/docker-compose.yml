@@ -1,0 +1,37 @@
+# Plantilla Docker: SQL Server + API.
+# 1) Copia .env.example a .env y define MSSQL_SA_PASSWORD (contraseña fuerte para la imagen oficial).
+# 2) docker compose up --build
+# 3) Aplica migraciones / crea esquema según tu flujo (EF o NHibernate).
+#
+# El host del motor en la cadena de conexión debe ser el nombre del servicio: sqlserver
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    env_file:
+      - .env
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=TemplateDb;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+    depends_on:
+      - sqlserver
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:

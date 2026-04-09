@@ -1,0 +1,38 @@
+{
+  "users": [
+    {
+      "name": "credit",
+      "password_hash": "Wa2cu94kGQegG3JEG2ZBQ844CsWiDUFwRWq9rxzJXuvtzxmW",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"]
+    }
+  ],
+  "permissions": [
+    {
+      "user": "credit",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "vhosts": [{"name": "/"}],
+  "queues": [
+    {"name": "credit-request-created", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {}},
+    {"name": "eligibility-validated", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {}},
+    {"name": "risk-evaluated", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {}},
+    {"name": "conditions-calculated", "vhost": "/", "durable": true, "auto_delete": false, "arguments": {}}
+  ],
+  "exchanges": [
+    {"name": "credit-request-created", "vhost": "/", "type": "fanout", "durable": true, "auto_delete": false, "internal": false, "arguments": {}},
+    {"name": "eligibility-validated", "vhost": "/", "type": "fanout", "durable": true, "auto_delete": false, "internal": false, "arguments": {}},
+    {"name": "risk-evaluated", "vhost": "/", "type": "fanout", "durable": true, "auto_delete": false, "internal": false, "arguments": {}},
+    {"name": "conditions-calculated", "vhost": "/", "type": "fanout", "durable": true, "auto_delete": false, "internal": false, "arguments": {}}
+  ],
+  "bindings": [
+    {"source": "credit-request-created", "vhost": "/", "destination": "credit-request-created", "destination_type": "queue", "routing_key": "credit-request-created", "arguments": {}},
+    {"source": "eligibility-validated", "vhost": "/", "destination": "eligibility-validated", "destination_type": "queue", "routing_key": "eligibility-validated", "arguments": {}},
+    {"source": "risk-evaluated", "vhost": "/", "destination": "risk-evaluated", "destination_type": "queue", "routing_key": "risk-evaluated", "arguments": {}},
+    {"source": "conditions-calculated", "vhost": "/", "destination": "conditions-calculated", "destination_type": "queue", "routing_key": "conditions-calculated", "arguments": {}}
+  ]
+}
